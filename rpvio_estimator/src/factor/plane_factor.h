@@ -11,7 +11,7 @@ struct PlaneFactor {
 
     template<typename T>
     bool operator()(const T *const pose_i, const T *const para_n, const T *const para_depth, const T *const ex_pose,
-                    const T *const para_feature, const T *residuals) {
+                    const T *const para_feature, const T *residuals) const {
         Eigen::Map<const Eigen::Matrix<T, 3, 1>> pi(pose_i);
         Eigen::Quaternion <T> qi;
         qi.coeffs() << pose_i[3] << pose_i[4] << pose_i[5] << pose_i[6];
@@ -33,6 +33,10 @@ struct PlaneFactor {
         Eigen::Vector3d pts_w = qic.inverse() * (pts_imu_0 - tic);
 
         residuals[0] = n.dot(pts_w) - d(0, 0);
+    }
+
+    static ceres::CostFunction *Create(const Eigen::Vector3d &_pts) {
+        return (new ceres::AutoDiffCostFunction<PlaneFactor, 1, 7, 3, 1, 7, 1>(new PlaneFactor(_pts)));
     }
 
 
