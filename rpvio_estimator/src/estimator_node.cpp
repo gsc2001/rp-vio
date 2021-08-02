@@ -206,7 +206,7 @@ void relocalization_callback(const sensor_msgs::PointCloudConstPtr &points_msg)
 }
 
 // thread: visual-inertial odometry
-void process()
+[[noreturn]] void process()
 {
     while (true)
     {
