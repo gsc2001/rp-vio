@@ -881,12 +881,17 @@ void Estimator::optimization()
         for (auto &it_per_frame : it_per_id.feature_per_frame)
         {
             imu_j++;
+            Vector3d pts_j = it_per_frame.point;
+
+            ceres::CostFunction* p_cost_function = PlaneFactor::Create(pts_j);
+            problem.AddResidualBlock(p_cost_function, loss_function, para_Pose[imu_j], para_N[pid].data(),
+                                     para_d[pid].data(), para_Ex_Pose[0], para_Feature[feature_index]);
+
             if (imu_i == imu_j)
             {
                 continue;
             }
 
-            Vector3d pts_j = it_per_frame.point;
 
             if (ESTIMATE_TD)
             {
