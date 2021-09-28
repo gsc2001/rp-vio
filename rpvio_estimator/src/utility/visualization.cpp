@@ -253,6 +253,9 @@ void pubPointCloud(const Estimator &estimator, const std_msgs::Header &header)
         if (it_per_id.start_frame > WINDOW_SIZE * 3.0 / 4.0 || it_per_id.solve_flag != 1)
             continue;
 
+        ROS_DEBUG("Plane_id: %d", it_per_id.plane_id);
+        if(it_per_id.plane_id != 162) continue;
+
         int imu_i = it_per_id.start_frame;
         Vector3d pts_i = it_per_id.feature_per_frame[0].point * it_per_id.estimated_depth;
         Vector3d w_pts_i = estimator.Rs[imu_i] * (estimator.ric[0] * pts_i + estimator.tic[0]) + estimator.Ps[imu_i];
