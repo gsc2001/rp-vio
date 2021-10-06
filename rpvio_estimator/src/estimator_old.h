@@ -24,8 +24,9 @@
 #include <opencv2/core/eigen.hpp>
 
 
-class Estimator {
-public:
+class Estimator
+{
+  public:
     Estimator();
 
     void setParameter();
@@ -37,7 +38,6 @@ public:
 
     // internal
     void clearState();
-
     bool initialStructure();
     bool visualInitialAlign(map<int,Eigen::Vector3d> &relative_T, Eigen::Vector3d &lt);
     bool relativePose(Matrix3d &relative_R, Vector3d &relative_T, int &l);
@@ -53,18 +53,20 @@ public:
     bool failureDetection();
 
 
-    enum SolverFlag {
+    enum SolverFlag
+    {
         INITIAL,
         NON_LINEAR
     };
 
-    enum MarginalizationFlag {
+    enum MarginalizationFlag
+    {
         MARGIN_OLD = 0,
         MARGIN_SECOND_NEW = 1
     };
 
     SolverFlag solver_flag;
-    MarginalizationFlag marginalization_flag;
+    MarginalizationFlag  marginalization_flag;
     Vector3d g;
     MatrixXd Ap[2], backup_A;
     VectorXd bp[2], backup_b;
@@ -108,7 +110,6 @@ public:
     vector<Vector3d> key_poses;
     double initial_timestamp;
 
-
     double para_Pose[WINDOW_SIZE + 1][SIZE_POSE];
     double para_SpeedBias[WINDOW_SIZE + 1][SIZE_SPEEDBIAS];
     double para_Feature[NUM_OF_F][SIZE_FEATURE];
@@ -116,7 +117,7 @@ public:
     double para_Retrive_Pose[SIZE_POSE];
     double para_Td[1][1];
     double para_Tr[1][1];
-
+    
     // In global camera frame (c_0)
     map<int, array<double,3>> para_N;
     map<int, array<double,1>> para_d;
@@ -131,7 +132,7 @@ public:
     map<double, ImageFrame> all_image_frame;
     IntegrationBase *tmp_pre_integration;
 
-    //relocalization variable
+    //relocalization variables
     bool relocalization_info;
     double relo_frame_stamp;
     double relo_frame_index;

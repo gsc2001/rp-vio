@@ -13,14 +13,13 @@
 using namespace Eigen;
 using namespace std;
 
-
-
 struct SFMFeature {
     bool state;
     int id;
     int plane_id;
     vector<pair<int, Vector2d>> observation;
     double position[3];
+    double image[3]; // u v 1
     double depth;
 };
 
@@ -55,33 +54,36 @@ struct ReprojectionError3D {
 
 
 struct ReprojectionErrorH {
-    double observed_x, observed_y;
-
-    ReprojectionErrorH(double observed_x, double observed_y) : observed_x(observed_x), observed_y(observed_y) {}
+    ReprojectionErrorH(double observed_u, double observed_v)
+            : observed_u(observed_u), observed_v(observed_v) {}
 
     template<typename T>
-    bool operator()(const T *R, const T *t, const T *n, const T *point, T *residuals) const {
+    bool operator()(const T *const R, const T *const t, const T *const n, const T *point, T *residuals) const {
+        T rp[3];
         T norm_point[3] = {point[0] / point[2], point[1] / point[2], point[2] / point[2]};
-        T rotated_point[3];
-        ceres::QuaternionRotatePoint(R, norm_point, rotated_point);
-
-        T nu = n[0] * norm_point[0] + n[1] * norm_point[1] + n[2] * norm_point[2];
-        T np = {t[0] * nu, t[1] * nu, t[2] * nu};
-        np[0] += rotated_point[0];
-        np[1] += rotated_point[1];
-        np[2] += rotated_point[2];
-        T x = np[0] / np[2];
-        T y = np[1] / np[2];
-        residuals[0] = x - T(observed_x);
-        residuals[1] = y - T(observed_y);
+        ceres::QuaternionRotatePoint(R, norm_point, rp);
+        T np = n[0] * norm_point[0] + n[1] * norm_point[1] + n[2] * norm_point[2];
+        rp[0] += t[0] * np;
+        rp[1] += t[1] * np;
+        rp[2] += t[2] * np;
+        T xp = rp[0] / rp[2];
+        T yp = rp[1] / rp[2];
+        residuals[0] = xp - T(observed_u);
+        residuals[1] = yp - T(observed_v);
         return true;
     }
 
-    static ceres::CostFunction *Create(const double observed_x, const double observed_y) {
-        return (new ceres::AutoDiffCostFunction<ReprojectionErrorH, 2, 4, 3, 3, 3>(
+    static ceres::CostFunction *Create(const double observed_x,
+                                       const double observed_y) {
+        return (new ceres::AutoDiffCostFunction<
+                ReprojectionErrorH, 2, 4, 3, 3, 3>(
                 new ReprojectionErrorH(observed_x, observed_y)));
     }
+
+    double observed_u;
+    double observed_v;
 };
+
 
 class GlobalSFM {
 public:
