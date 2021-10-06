@@ -264,7 +264,8 @@ void MotionEstimator::decomposeH(const cv::Mat &H, const cv::Mat &K, const Matri
         }
         vector<double> rotation_loss;
         for (int i = 0; i < positive_transformations.size(); i++) {
-            Matrix3d R_imu_est = TrIC * positive_transformations[i].block(0, 0, 3, 3) * TrIC.inverse();
+            Matrix4d Tr = TrIC * positive_transformations[i] * TrIC.inverse();
+            Matrix3d R_imu_est = Tr.block(0,0,3,3);
             double loss = (R_imu.transpose() * R_imu_est - Matrix3d::Identity()).norm();
             rotation_loss.push_back(loss);
         }

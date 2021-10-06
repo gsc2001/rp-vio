@@ -66,7 +66,7 @@ struct ReprojectionErrorH {
         ceres::QuaternionRotatePoint(R, norm_point, rotated_point);
 
         T nu = n[0] * norm_point[0] + n[1] * norm_point[1] + n[2] * norm_point[2];
-        T np = {t[0] * nu, t[1] * nu, t[2] * nu};
+        T np[3] = {t[0] * nu, t[1] * nu, t[2] * nu};
         np[0] += rotated_point[0];
         np[1] += rotated_point[1];
         np[2] += rotated_point[2];
