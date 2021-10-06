@@ -24,49 +24,64 @@
 #include <opencv2/core/eigen.hpp>
 
 
-class Estimator
-{
-  public:
+class Estimator {
+public:
     Estimator();
 
     void setParameter();
 
     // interface
     void processIMU(double t, const Vector3d &linear_acceleration, const Vector3d &angular_velocity);
-    void processImage(const map<int, vector<pair<int, Eigen::Matrix<double, 8, 1>>>> &image, const std_msgs::Header &header);
-    void setReloFrame(double _frame_stamp, int _frame_index, vector<Vector3d> &_match_points, Vector3d _relo_t, Matrix3d _relo_r);
+
+    void
+    processImage(const map<int, vector<pair<int, Eigen::Matrix<double, 8, 1>>>> &image, const std_msgs::Header &header);
+
+    void setReloFrame(double _frame_stamp, int _frame_index, vector<Vector3d> &_match_points, Vector3d _relo_t,
+                      Matrix3d _relo_r);
 
     // internal
     void clearState();
+
     bool initialStructure();
-    bool visualInitialAlign(map<int,Eigen::Vector3d> &relative_T, Eigen::Vector3d &lt);
+
+    bool visualInitialAlign(map<int, Eigen::Vector3d> &relative_T, Eigen::Vector3d &lt);
+
     bool relativePose(Matrix3d &relative_R, Vector3d &relative_T, int &l);
-    bool relativeHPose(map<int, Matrix3d> &relative_R, map<int, Vector3d> &relative_T, map<int, Vector3d> &n, int &l, int &lplane_id);
+
+    bool relativeHPose(map<int, Matrix3d> &relative_R, map<int, Vector3d> &relative_T, map<int, Vector3d> &n, int &l,
+                       int &lplane_id);
+
     void initializeNewPlanes();
+
     void slideWindow();
+
     void solveOdometry();
+
     void slideWindowNew();
+
     void slideWindowOld();
+
     void optimization();
+
     void vector2double();
+
     void double2vector();
+
     bool failureDetection();
 
 
-    enum SolverFlag
-    {
+    enum SolverFlag {
         INITIAL,
         NON_LINEAR
     };
 
-    enum MarginalizationFlag
-    {
+    enum MarginalizationFlag {
         MARGIN_OLD = 0,
         MARGIN_SECOND_NEW = 1
     };
 
     SolverFlag solver_flag;
-    MarginalizationFlag  marginalization_flag;
+    MarginalizationFlag marginalization_flag;
     Vector3d g;
     MatrixXd Ap[2], backup_A;
     VectorXd bp[2], backup_b;
@@ -117,10 +132,10 @@ class Estimator
     double para_Retrive_Pose[SIZE_POSE];
     double para_Td[1][1];
     double para_Tr[1][1];
-    
+
     // In global camera frame (c_0)
-    map<int, array<double,3>> para_N;
-    map<int, array<double,1>> para_d;
+    map<int, array<double, 3>> para_N;
+    map<int, array<double, 1>> para_d;
 
     vector<int> init_pids;
 
