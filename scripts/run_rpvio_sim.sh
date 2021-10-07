@@ -47,19 +47,6 @@ do
     evo_ape tum $dataset/c2/groundtruth.txt c2/est_traj_$i.txt --align --save_plot c2/est_traj_$i.pdf |& tee -a report.txt
 done
 
-########### c4 run #############
-
-mkdir c4
-echo -e "######c4######\n" > report.txt
-
-for((i = 1; i <=1; i++))
-do
-    roslaunch rpvio_estimator rpvio_sim.launch bagfile_path:=$dataset/c4/c4.bag
-    cp ~/output/rpvio_result_no_loop.csv ./rpvio_est.csv
-    python ~/catkin_ws/src/rp-vio/scripts/convert_vins_to_tum.py rpvio_est.csv c4/est_traj_$i.txt
-    rm rpvio_est.csv
-    evo_ape tum $dataset/c4/groundtruth.txt c4/est_traj_$i.txt --align --save_plot c4/est_traj_$i.pdf |& tee -a report.txt
-done
 
 ############ c6 run #############
 
